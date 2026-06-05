@@ -226,3 +226,23 @@ class ChapterAPITest(APITestCase):
             {'title': 'Hacked Chapter'}
         )
         self.assertEqual(response.status_code, 403)
+
+    def test_non_enrolled_cannot_retrieve_private_chapter(self):
+        self.auth(self.non_enrolled_token)
+        response = self.client.get(f'/api/chapters/{self.private_chapter.id}/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_enrolled_student_can_retrieve_public_chapter(self):
+        self.auth(self.enrolled_token)
+        response = self.client.get(f'/api/chapters/{self.public_chapter.id}/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_enrolled_student_cannot_retrieve_private_chapter(self):
+        self.auth(self.enrolled_token)
+        response = self.client.get(f'/api/chapters/{self.private_chapter.id}/')
+        self.assertEqual(response.status_code, 403)
+
+    def test_owner_can_retrieve_private_chapter(self):
+        self.auth(self.instructor_token)
+        response = self.client.get(f'/api/chapters/{self.private_chapter.id}/')
+        self.assertEqual(response.status_code, 200)

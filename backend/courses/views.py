@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from .models import Course, Chapter, Enrollment
 from .serializers import CourseSerializer, ChapterSerializer, EnrollmentSerializer
-from .permissions import IsInstructor, IsCourseOwner
+from .permissions import IsInstructor, IsCourseOwner, IsEnrolledOrOwner
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -61,8 +61,10 @@ class ChapterViewSet(viewsets.ModelViewSet):
     serializer_class = ChapterSerializer
 
     def get_permissions(self):
-        if self.action in ('list', 'retrieve'):
+        if self.action == 'list':
             return [IsAuthenticated()]
+        elif self.action == 'retrieve':
+            return [IsAuthenticated(), IsEnrolledOrOwner()]
         else:
             return [IsAuthenticated(), IsCourseOwner()]
 
@@ -114,8 +116,7 @@ class ChapterViewSet(viewsets.ModelViewSet):
 
     def get_object(self):
         obj = super().get_object()
-        if self.action in ('update', 'partial_update', 'destroy'):
-            self.check_object_permissions(self.request, obj)
+        self.check_object_permissions(self.request, obj)
         return obj
 
     def update(self, request, *args, **kwargs):
