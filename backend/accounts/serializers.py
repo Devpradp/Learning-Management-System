@@ -9,6 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'password', 'role']
+        read_only_fields = ['id']
 
     def validate_role(self, value):
         if value not in ('instructor', 'student'):

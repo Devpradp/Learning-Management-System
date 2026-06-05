@@ -59,6 +59,16 @@ class RegisterAPITest(TestCase):
         })
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_register_token_is_usable(self):
+        res = self.client.post(self.url, {
+            'username': 'u2', 'password': 'pass123', 'role': 'student'
+        })
+        token = res.data['token']
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token}')
+        me_res = self.client.get(reverse('auth-me'))
+        self.assertEqual(me_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(me_res.data['role'], 'student')
+
 
 class LoginAPITest(TestCase):
     def setUp(self):
@@ -92,4 +102,30 @@ class MeAPITest(TestCase):
 
     def test_me_unauthenticated(self):
         res = self.client.get(self.url)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_me_returns_student_role(self):
+        student = User.objects.create_user(username='s', password='p', role='student')
+        token = Token.objects.create(user=student)
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {token.key}')
+        res = self.client.get(self.url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data['role'], 'student')
+
+
+class LogoutAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse('auth-logout')
+        self.user = User.objects.create_user(username='u', password='p', role='student')
+        self.token = Token.objects.create(user=self.user)
+
+    def test_logout_deletes_token(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f'Token {self.token.key}')
+        res = self.client.post(self.url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Token.objects.filter(user=self.user).exists())
+
+    def test_logout_unauthenticated(self):
+        res = self.client.post(self.url)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
