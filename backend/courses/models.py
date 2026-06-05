@@ -7,7 +7,7 @@ class Course(models.Model):
     description = models.TextField(blank=True)
     instructor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name='taught_courses'
     )
     created_at = models.DateTimeField(auto_now_add=True)
