@@ -84,7 +84,7 @@ function CourseListContent() {
             Courses
           </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Browse and manage your courses
+            {user?.role === 'instructor' ? 'Manage your courses' : 'Browse available courses'}
           </p>
         </div>
         {user?.role === 'instructor' && (
@@ -160,14 +160,6 @@ function CourseListContent() {
                       {actionInProgress === course.id ? 'Leaving…' : 'Leave'}
                     </button>
                   </>
-                ) : user?.role === 'instructor' ? (
-                  // Instructor viewing someone else's course — can only view
-                  <Link
-                    href={`/courses/${course.id}`}
-                    className="inline-flex items-center rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                  >
-                    View
-                  </Link>
                 ) : (
                   // Student not enrolled
                   <button

@@ -108,7 +108,7 @@ class CourseAPITest(APITestCase):
     def test_non_owner_cannot_update_course(self):
         self.auth(self.instructor2_token)
         response = self.client.patch(f'/api/courses/{self.course.id}/', {'title': 'Hacked Title'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_owner_can_delete_course(self):
         self.auth(self.instructor_token)
