@@ -1,10 +1,9 @@
 'use client';
 
-import { Plate, PlateContent, usePlateEditor } from '@udecode/plate/react';
-import { BasicMarksPlugin } from '@udecode/plate-basic-marks/react';
-import { HeadingPlugin } from '@udecode/plate-heading/react';
-import { ListPlugin } from '@udecode/plate-list/react';
-import type { Value } from '@udecode/slate';
+import { Plate, PlateContent, usePlateEditor } from 'platejs/react';
+import { BasicMarksPlugin, BoldPlugin, HeadingPlugin } from '@platejs/basic-nodes/react';
+import { ListPlugin } from '@platejs/list/react';
+import type { Value } from 'platejs';
 
 interface PlateEditorProps {
   readOnly?: boolean;
@@ -16,7 +15,7 @@ const EMPTY_VALUE: Value = [{ type: 'p', children: [{ text: '' }] }];
 
 export default function PlateEditor({ readOnly = false, value, onChange }: PlateEditorProps) {
   const editor = usePlateEditor({
-    plugins: [BasicMarksPlugin, HeadingPlugin, ListPlugin],
+    plugins: [BasicMarksPlugin, HeadingPlugin, ListPlugin, BoldPlugin],
     value: value && value.length > 0 ? value : EMPTY_VALUE,
   });
 
