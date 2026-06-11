@@ -16,16 +16,19 @@ const EMPTY_VALUE: Value = [{ type: 'p', children: [{ text: '' }] }];
 interface MarkButtonProps {
   nodeType: string;
   label: string;
+  ariaLabel: string;
   className?: string;
 }
 
-function MarkButton({ nodeType, label, className = '' }: MarkButtonProps) {
+function MarkButton({ nodeType, label, ariaLabel, className = '' }: MarkButtonProps) {
   const state = useMarkToolbarButtonState({ nodeType });
   const { props } = useMarkToolbarButton(state);
 
   return (
     <button
       {...props}
+      aria-label={ariaLabel}
+      aria-pressed={state.pressed}
       className={
         'rounded px-2 py-0.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800' +
         (state.pressed
@@ -54,9 +57,9 @@ export default function PlateEditor({ readOnly = false, value, onChange }: Plate
     >
       {!readOnly && (
         <div className="flex gap-1 border-b border-zinc-200 bg-white px-2 py-1 dark:border-zinc-700 dark:bg-zinc-900">
-          <MarkButton nodeType={BoldPlugin.key} label="B" className="font-bold" />
-          <MarkButton nodeType={ItalicPlugin.key} label="I" className="italic" />
-          <MarkButton nodeType={UnderlinePlugin.key} label="U" className="underline" />
+          <MarkButton nodeType={BoldPlugin.key} label="B" ariaLabel="Toggle bold" className="font-bold" />
+          <MarkButton nodeType={ItalicPlugin.key} label="I" ariaLabel="Toggle italic" className="italic" />
+          <MarkButton nodeType={UnderlinePlugin.key} label="U" ariaLabel="Toggle underline" className="underline" />
         </div>
       )}
       <PlateContent
