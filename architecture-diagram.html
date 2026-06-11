@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LMS Architecture</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    padding: 40px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+  }
+
+  .diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* --- LAYERS --- */
+  .layer {
+    width: 100%;
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+  }
+  .layer-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.5;
+  }
+
+  /* User layer */
+  .user-layer {
+    background: #1e293b;
+    border: 1px solid #334155;
+    width: auto;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 32px;
+    border-radius: 12px;
+    margin-bottom: 0;
+  }
+  .user-icon { font-size: 32px; line-height: 1; }
+  .user-label { font-size: 13px; color: #94a3b8; margin-top: 6px; }
+
+  /* Arrow */
+  .arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    position: relative;
+    z-index: 10;
+  }
+  .arrow-line {
+    width: 2px;
+    height: 28px;
+    background: linear-gradient(to bottom, #475569, #64748b);
+  }
+  .arrow-head {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #64748b;
+  }
+  .arrow-label {
+    position: absolute;
+    left: 14px;
+    top: 6px;
+    font-size: 10px;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  /* Frontend layer */
+  .frontend-layer {
+    background: #0d2137;
+    border: 1.5px solid #1d4ed8;
+    width: 100%;
+  }
+  .frontend-layer .layer-label { color: #60a5fa; }
+
+  /* Backend layer */
+  .backend-layer {
+    background: #1a1200;
+    border: 1.5px solid #ca8a04;
+    width: 100%;
+  }
+  .backend-layer .layer-label { color: #fbbf24; }
+
+  /* DB layer */
+  .db-layer {
+    background: #0f1f0f;
+    border: 1.5px solid #16a34a;
+    width: auto;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 32px;
+    border-radius: 12px;
+  }
+  .db-icon { font-size: 28px; }
+  .db-label { font-size: 13px; color: #4ade80; margin-top: 6px; font-weight: 600; }
+  .db-sublabel { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+  /* Boxes inside layers */
+  .boxes {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .box {
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    flex: 1;
+    min-width: 120px;
+  }
+  .box-title {
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .box-item {
+    font-size: 11px;
+    color: #94a3b8;
+    padding: 1px 0;
+  }
+  .box-item code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 10.5px;
+    color: #cbd5e1;
+  }
+
+  /* Frontend boxes */
+  .box-pages { background: #0f2d52; border: 1px solid #1e40af; }
+  .box-pages .box-title { color: #93c5fd; }
+  .box-auth { background: #0f2d52; border: 1px solid #1e40af; }
+  .box-auth .box-title { color: #93c5fd; }
+  .box-editor { background: #0f2d52; border: 1px solid #1e40af; }
+  .box-editor .box-title { color: #93c5fd; }
+
+  /* Backend boxes */
+  .box-endpoints { background: #2a1f00; border: 1px solid #92400e; }
+  .box-endpoints .box-title { color: #fcd34d; }
+  .box-models { background: #2a1f00; border: 1px solid #92400e; }
+  .box-models .box-title { color: #fcd34d; }
+  .box-django { background: #2a1f00; border: 1px solid #92400e; }
+  .box-django .box-title { color: #fcd34d; }
+
+  /* Separator inside arrow */
+  .port-badge {
+    font-size: 10px;
+    font-family: 'SF Mono', monospace;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: #94a3b8;
+    margin: 4px 0;
+  }
+
+  .double-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .double-arrow .line-up {
+    width: 2px; height: 12px;
+    background: #475569;
+  }
+  .double-arrow .both {
+    font-size: 11px;
+    color: #64748b;
+    letter-spacing: 0.05em;
+  }
+  .double-arrow .line-down {
+    width: 2px; height: 12px;
+    background: #475569;
+  }
+  .double-arrow .arrow-down {
+    width: 0; height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #64748b;
+  }
+
+  .tech-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-family: 'SF Mono', monospace;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: #94a3b8;
+    margin: 2px 2px 0 0;
+  }
+  .tech-row {
+    margin-top: 10px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 36px;
+    font-size: 11px;
+    color: #334155;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<h1>Learning Management System — Architecture</h1>
+
+<div class="diagram">
+
+  <!-- USER -->
+  <div class="user-layer">
+    <div class="user-icon">👤</div>
+    <div class="user-label">Browser (Student / Instructor)</div>
+  </div>
+
+  <!-- ARROW: Browser → Frontend -->
+  <div class="arrow">
+    <div class="arrow-line"></div>
+    <div class="port-badge">localhost:3000</div>
+    <div class="arrow-line" style="height:12px"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <!-- FRONTEND LAYER -->
+  <div class="layer frontend-layer">
+    <div class="layer-label">Frontend — Next.js 14 (App Router)</div>
+    <div class="boxes">
+
+      <div class="box box-pages">
+        <div class="box-title">Pages</div>
+        <div class="box-item"><code>/login</code> &nbsp;Register / Login</div>
+        <div class="box-item"><code>/courses</code> &nbsp;Course list</div>
+        <div class="box-item"><code>/courses/[id]</code> &nbsp;Detail + Enroll</div>
+        <div class="box-item"><code>/chapters/[id]</code> &nbsp;Chapter reader</div>
+        <div class="box-item"><code>/instructor/courses</code> &nbsp;Manage courses</div>
+        <div class="box-item"><code>/instructor/courses/[id]</code> &nbsp;Edit + chapters</div>
+      </div>
+
+      <div class="box box-auth">
+        <div class="box-title">Auth &amp; State</div>
+        <div class="box-item"><code>AuthContext</code></div>
+        <div class="box-item">JWT stored in localStorage</div>
+        <div class="box-item">Role-based routing</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-title" style="margin-top:10px">Shared</div>
+        <div class="box-item"><code>api.ts</code> — Axios client</div>
+        <div class="box-item"><code>Navbar</code> — role-aware</div>
+      </div>
+
+      <div class="box box-editor">
+        <div class="box-title">Rich Text Editor</div>
+        <div class="box-item"><strong style="color:#a5b4fc">Plate.js</strong></div>
+        <div class="box-item">Block-based editing</div>
+        <div class="box-item">Saves as JSON</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-title" style="margin-top:10px">Stack</div>
+        <div class="box-item">TypeScript</div>
+        <div class="box-item">Tailwind CSS</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ARROW: Frontend → Backend -->
+  <div class="arrow">
+    <div class="arrow-line"></div>
+    <div class="port-badge">HTTP JSON → localhost:8000/api/</div>
+    <div class="arrow-line" style="height:12px"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <!-- BACKEND LAYER -->
+  <div class="layer backend-layer">
+    <div class="layer-label">Backend — Django 5 + Django REST Framework</div>
+    <div class="boxes">
+
+      <div class="box box-endpoints">
+        <div class="box-title">API Endpoints</div>
+        <div class="box-item"><code>POST /api/auth/register/</code></div>
+        <div class="box-item"><code>POST /api/auth/login/</code></div>
+        <div class="box-item"><code>POST /api/auth/token/refresh/</code></div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-item"><code>GET/POST /api/courses/</code></div>
+        <div class="box-item"><code>GET/PUT/DELETE /api/courses/{id}/</code></div>
+        <div class="box-item"><code>POST /api/courses/{id}/enroll/</code></div>
+        <div class="box-item"><code>DELETE /api/courses/{id}/leave/</code></div>
+        <div class="box-item"><code>GET /api/courses/{id}/chapters/</code></div>
+        <div class="box-item"><code>GET/PUT/DELETE /api/chapters/{id}/</code></div>
+      </div>
+
+      <div class="box box-models">
+        <div class="box-title">Models</div>
+        <div class="box-item"><strong style="color:#fde68a">User</strong></div>
+        <div class="box-item" style="padding-left:10px">role: instructor | student</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-item"><strong style="color:#fde68a">Course</strong></div>
+        <div class="box-item" style="padding-left:10px">title, description, instructor</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-item"><strong style="color:#fde68a">Chapter</strong></div>
+        <div class="box-item" style="padding-left:10px">title, content (JSON), order, is_public</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-item"><strong style="color:#fde68a">Enrollment</strong></div>
+        <div class="box-item" style="padding-left:10px">student → course (unique)</div>
+      </div>
+
+      <div class="box box-django">
+        <div class="box-title">Auth &amp; Permissions</div>
+        <div class="box-item">JWT (SimpleJWT)</div>
+        <div class="box-item">IsAuthenticated</div>
+        <div class="box-item">IsInstructor</div>
+        <div class="box-item">IsEnrolledOrOwner</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-title" style="margin-top:10px">Admin</div>
+        <div class="box-item"><code>/admin/</code> — Django Admin</div>
+        <div class="box-item">User role management</div>
+        <div class="box-item">&nbsp;</div>
+        <div class="box-title" style="margin-top:10px">Tests</div>
+        <div class="box-item">43 passing tests</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ARROW: Backend → DB -->
+  <div class="arrow">
+    <div class="arrow-line"></div>
+    <div class="port-badge">ORM (Django)</div>
+    <div class="arrow-line" style="height:12px"></div>
+    <div class="arrow-head"></div>
+  </div>
+
+  <!-- DATABASE -->
+  <div class="db-layer">
+    <div class="db-icon">🗄️</div>
+    <div class="db-label">SQLite</div>
+    <div class="db-sublabel">db.sqlite3 (development)</div>
+  </div>
+
+</div>
+
+<footer>Learning Management System &nbsp;·&nbsp; Django REST Framework + Next.js</footer>
+
+</body>
+</html>

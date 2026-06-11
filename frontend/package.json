@@ -8,8 +8,18 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.70",
+    "@ai-sdk/react": "^3.0.204",
+    "@ariakit/react": "^0.4.29",
+    "@platejs/ai": "^53.0.9",
     "@platejs/basic-nodes": "^53.0.0",
+    "@platejs/combobox": "^53.0.0",
     "@platejs/list": "^53.0.2",
+    "@platejs/markdown": "^53.0.4",
+    "@platejs/selection": "^53.0.0",
+    "@platejs/slash-command": "^53.0.0",
+    "ai": "^6.0.202",
+    "class-variance-authority": "^0.7.1",
     "next": "16.2.7",
     "platejs": "^53.0.7",
     "react": "19.2.4",
