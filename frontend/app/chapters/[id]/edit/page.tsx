@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import type { Value } from '@udecode/slate';
+import type { Value } from 'platejs';
 import { apiFetch } from '@/lib/api';
 import { RequireAuth } from '@/context/AuthContext';
 import PlateEditor from '@/components/PlateEditor';
